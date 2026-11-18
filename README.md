@@ -1,2 +1,98 @@
-# BeamNG.drive-ModsLoader
-This application is designed for the quick, direct downloading of BeamNG.drive mods via Modsfire or other file-hosting services. For testing purposes, I used the following site: https://beamnghub.ru. Launch the application using start.bat. Virus-free! additional language localization will be added in the future.
+# BeamNG.drive MODS
+
+Терминальный клиент для скачивания модов BeamNG.drive по ссылкам: разбирает
+страницы-каталоги, достаёт прямые ссылки с файлообменников, качает в очередь с
+докачкой и показывает прогресс в ASCII-интерфейсе.
+
+## Возможности
+
+- очередь ссылок без ограничения количества, вставка из буфера и drag-and-drop;
+- выбор модов со страницы-каталога и загрузка выбранных;
+- докачка после обрыва связи, проверка ZIP и свободного места;
+- пропуск отдельного мода в очереди и остановка всей очереди;
+- пиксельный шрифт Handjet (кириллица) и терминальная вёрстка;
+- журнал с тегами `[SYS] [NET] [FILE]`, прогресс `[####----]`;
+- заставка с крупным логотипом и настраиваемым эффектом;
+- папка модов запоминается между запусками.
+
+## Требования
+
+- Windows 10/11, Python 3.11+;
+- зависимости из `requirements.txt`.
+
+```bat
+py -m pip install -r requirements.txt
+```
+
+## Запуск
+
+```bat
+start.bat
+```
+
+или
+
+```bat
+py main.py
+```
+
+Повторный запуск не открывает второе окно — приложение поднимает уже
+работающий экземпляр.
+
+## Ярлык на рабочем столе
+
+```bat
+py tools\shortcut.py
+```
+
+Создаёт `BeamNG.drive.lnk` с иконкой из `assets/icon.ico`, запускающий
+`main.py` через `pythonw.exe`.
+
+## Настройки
+
+Хранятся в `%LOCALAPPDATA%\BeamNGMods\BeamNGMods\settings.ini`.
+
+- `оформление` — скорость печати текста;
+- `заставка` — показывать при запуске, эффект (`печать`, `плавно`, `сразу`),
+  скорость (`медленно`, `обычно`, `быстро`);
+- `поток` — начинать скачивание сразу после вставки ссылки.
+
+## Структура
+
+```
+main.py              точка входа, заставка, единственный экземпляр
+start.bat            запуск через pythonw
+core/                сеть и загрузка
+  engine.py          движок передачи, докачка, повторы
+  resolvers.py       разбор файлообменников
+  pages.py           разбор страниц-каталогов
+  utils.py           имена файлов, размеры, папки
+  net.py             быстрая проверка наличия интернета
+ui/                  интерфейс на PySide6
+  main_window.py     главное окно и очередь
+  splash.py          заставка и эффекты
+  widgets.py         кнопки, поля, статус-строка
+  settings_dialog.py настройки
+  feed_dialog.py     выбор модов со страницы
+  transfer.py        панель передачи и пропуск
+  terminal.py        журнал
+  theme.py           палитра, шрифты, QSS
+  motion.py          анимация печати
+  worker.py          фоновые задачи
+assets/              шрифты (Handjet, Cascadia Mono / OFL), logo.png и иконки
+tests/               служебные скрипты и проверки
+tools/shortcut.py    создание ярлыка
+```
+
+## Проверка
+
+```bat
+py -m compileall -q main.py core ui tools
+```
+
+Скриншоты интерфейса без запуска окна:
+
+```bat
+set QT_QPA_PLATFORM=offscreen
+py tests\capture_ui.py
+```
